@@ -1,0 +1,59 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Môi trường ảo
+venv/
+.venv/
+env/
+ENV/
+
+# Power BI
+# File tạm / cache của Power BI Desktop
+*.pbix.tmp
+.pbi/
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+# Nếu .pbix > 100 MB hãy bỏ comment dòng dưới (hoặc dùng Git LFS)
+# powerbi/*.pbix
+
+# MySQL
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.bak
+
+# Log
+*.log
+*.tmp
+*.temp
+~$*
+
+# IDE / hệ điều hành
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
