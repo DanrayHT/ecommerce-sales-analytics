@@ -102,18 +102,21 @@ rfm AS (
     HAVING frequency > 0 AND monetary > 0
 ),
 scored AS (
+    -- Fixed thresholds for R and F (NTILE would split ties arbitrarily); M uses quintiles with a tie-breaker
     SELECT *,
-           NTILE(5) OVER (ORDER BY recency DESC)   AS r_score,
-           NTILE(5) OVER (ORDER BY frequency ASC)  AS f_score,
-           NTILE(5) OVER (ORDER BY monetary ASC)   AS m_score
+           CASE WHEN recency <= 30 THEN 5 WHEN recency <= 90 THEN 4 WHEN recency <= 180 THEN 3
+                WHEN recency <= 270 THEN 2 ELSE 1 END AS r_score,
+           CASE WHEN frequency >= 10 THEN 5 WHEN frequency >= 5 THEN 4 WHEN frequency >= 3 THEN 3
+                WHEN frequency = 2 THEN 2 ELSE 1 END  AS f_score,
+           NTILE(5) OVER (ORDER BY monetary ASC, customer_id) AS m_score
     FROM rfm
 ),
 segmented AS (
     SELECT *,
            CASE WHEN r_score >= 4 AND f_score >= 4 THEN 'Champions'
+                WHEN (r_score <= 3 AND f_score >= 4) OR (r_score <= 2 AND f_score >= 3) THEN 'At Risk (was loyal)'
                 WHEN r_score >= 3 AND f_score >= 3 THEN 'Loyal'
                 WHEN r_score >= 4 AND f_score <= 2 THEN 'New / Promising'
-                WHEN r_score <= 2 AND f_score >= 4 THEN 'At Risk (was loyal)'
                 WHEN r_score <= 2 AND f_score <= 2 THEN 'Lost'
                 ELSE 'Needs Attention' END AS segment
     FROM scored
